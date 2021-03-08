@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
@@ -26,17 +27,14 @@ import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.JwtParserBuilder;
 import io.jsonwebtoken.Jwts;
 
-/*  Blue2Factor b2f = new Blue2Factor();
- *  if (jwt != null) {
- *      if (b2f.isAuthenticated(jwt)) {
- *          //show your page
- *      } else {
- *          String url = StringEscapeUtils.escapeHtml(currentUrl);
- *          //redirect to: b2f.FAILURE_URL + "?url=" + url;
- *      }
- *  } else {
- *      //redirect to: b2f.RESET_URL;
- *  }
+/*  
+ * Blue2Factor b2f = new Blue2Factor();
+   String redirect = b2fRedirect(jwt, currentUrl);
+   if (redirect != null) {
+       //redirect to the page: redirect
+   } else {
+       // show your page
+   }
  */
 
 public class Blue2Factor {
@@ -51,6 +49,24 @@ public class Blue2Factor {
     public final String FAILURE_URL = SECURE_URL + "/SAML2/SSO/" + myCompanyID + "/Token";
     public final String RESET_URL = SECURE_URL + "/failure/" + myCompanyID + "/recheck";
     private final int SUCCESS = 0;
+
+    public String b2fRedirect(String jwt, String currentUrl) {
+        String redirect;
+        if (jwt != null && !jwt.equals("")) {
+            if (isAuthenticated(jwt)) {
+                redirect = null;
+            } else {
+                try {
+                    redirect = this.FAILURE_URL + "?url=" + URLEncoder.encode(currentUrl, "UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    redirect = this.FAILURE_URL;
+                }
+            }
+        } else {
+            redirect = this.RESET_URL;
+        }
+        return redirect;
+    }
 
     /**
      * Checks the token, if it's not successful then gets a new token
