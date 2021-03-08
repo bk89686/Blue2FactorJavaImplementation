@@ -27,11 +27,15 @@ import io.jsonwebtoken.JwtParserBuilder;
 import io.jsonwebtoken.Jwts;
 
 /*  Blue2Factor b2f = new Blue2Factor();
- *  if (b2f.isAuthenticated(jwt)) {
- *      //show your page
+ *  if (jwt != null) {
+ *      if (b2f.isAuthenticated(jwt)) {
+ *          //show your page
+ *      } else {
+ *          String url = StringEscapeUtils.escapeHtml(currentUrl);
+ *          //redirect to: b2f.FAILURE_URL + "?url=" + url;
+ *      }
  *  } else {
- *      String url = StringEscapeUtils.escapeHtml(currentUrl);
- *      //"redirect to " + b2f.FAILURE_URL + "?url=" + url;
+ *      //redirect to: b2f.RESET_URL;
  *  }
  */
 
@@ -44,7 +48,8 @@ public class Blue2Factor {
     // do not change these values
     private final String SECURE_URL = "https://secure.blue2factor.com";
     private final String ENDPOINT = SECURE_URL + "/SAML2/SSO/" + myCompanyID + "/Token";
-    public final String FAILURE_URL = SECURE_URL + "/f2Failure";
+    public final String FAILURE_URL = SECURE_URL + "/SAML2/SSO/" + myCompanyID + "/Token";
+    public final String RESET_URL = SECURE_URL + "/failure/" + myCompanyID + "/recheck";
     private final int SUCCESS = 0;
 
     /**
